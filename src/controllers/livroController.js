@@ -1,6 +1,7 @@
 // centralizar toda a lógica que está relacionada com as ações que podem ser feitas em um livro
 
 import livro from "../models/Livro.js";
+import { author  } from "../models/Autor.js";
 
 class LivroController {
   static async listLivros(req, res) {
@@ -9,12 +10,12 @@ class LivroController {
       res.status(200).json(listBooks);
     } catch (erro) {
       res.status(500).json({
-        message: `${err.message} - Falha ao listar os livros`,
-        error: err.message,
+        message: `${erro.message} - Falha ao listar os livros`,
+        error: erro.message,
       });
     }
   }
-  
+
   static async listLivroById(req, res) {
     try {
       const id = req.params.id;
@@ -28,27 +29,40 @@ class LivroController {
     }
   }
 
-
-
   static async addBook(req, res) {
+    const newBook = req.body;
+
     try {
-      const newBook = await livro.create(req.body);
+      const authorFinded = await author.findById(newBook.author);
+      if (!authorFinded) {
+        return res.status(404).json({
+          message: "Autor não encontrado",
+        });
+      }
+
+      const completBook = {
+        ...newBook,
+        author: authorFinded, 
+      };
+
+      const createBook = await livro.create(completBook);
       res.status(201).json({
         message: "Livro criado com sucesso",
-        book: newBook,
+        book: createBook,
       });
     } catch (erro) {
-        res.status(500).json({
-            message: `${erro.message} - Falha ao cadastrar o livro`,
-            error: erro.message,
-        })
+      res.status(500).json({
+        message: `${erro.message} - Falha ao cadastrar o livro`,
+        error: erro.message,
+      });
     }
   }
+
   static async updateLivroById(req, res) {
     try {
       const id = req.params.id;
       await livro.findByIdAndUpdate(id, req.body);
-      res.status(200).json({message: "Livro atualizado"});
+      res.status(200).json({ message: "Livro atualizado" });
     } catch (erro) {
       res.status(500).json({
         message: `${erro.message} - Falha na atualização do livro`,
@@ -61,7 +75,7 @@ class LivroController {
     try {
       const id = req.params.id;
       await livro.findByIdAndDelete(id);
-      res.status(200).json({message: "Livro deletado com sucesso"});
+      res.status(200).json({ message: "Livro deletado com sucesso" });
     } catch (erro) {
       res.status(500).json({
         message: `${erro.message} - Falha na exclusão do livro`,
@@ -69,7 +83,6 @@ class LivroController {
       });
     }
   }
-
 }
 
 // lembrar de adicionar cada uma dessas rotas em routes
