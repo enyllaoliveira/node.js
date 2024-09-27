@@ -1,6 +1,7 @@
 // import http from "http"; // começou aqui e depois foi criado o app.js e instalado embaixo
-
+import 'dotenv/config'
 import app from './src/app.js'
+
 const PORT = 3000;
 
 const rotas = {
