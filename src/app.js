@@ -4,25 +4,24 @@ import mongoose from "mongoose";
 // import livro from '../src/models/Livro.js' - passou para o controller a responsabilidade
 import routes from "../index.js";
 
-
 try {
-    await connectDatabase();
+  await connectDatabase();
 
-    const connection = mongoose.connection; 
+  const connection = mongoose.connection;
 
-    connection.on('error', (erro) => {
-        console.error('Erro de conexão:', erro);
-    });
+  connection.on("error", (erro) => {
+    console.error("Erro de conexão:", erro);
+  });
 
-    connection.once("open", () => {
-        console.log('Conexão com o banco feita com sucesso');
-    });
+  connection.once("open", () => {
+    console.log("Conexão com o banco feita com sucesso");
+  });
 } catch (erro) {
-    console.error('Erro ao tentar conectar ao banco de dados:', erro);
+  console.error("Erro ao tentar conectar ao banco de dados:", erro);
 }
 
- const app = express();
- routes(app)
+const app = express();
+routes(app);
 
 // app.use(express.json()); - passou a responsabilidade para routes
 
@@ -70,14 +69,12 @@ try {
 //   res.status(201).send("livro cadastrado com sucesso");
 // });- esta sendo transferida para livroController
 
-app.delete("/livros/:id", (req, res) => {
-    const index = searchBooks(req.params.id);
-      livros.splice(index, 1)
-      res.status(200).send("Item deletado")
-  })
-
+// app.delete("/livros/:id", (req, res) => {
+//     const index = searchBooks(req.params.id);
+//       livros.splice(index, 1)
+//       res.status(200).send("Item deletado")
+//   })
 
 // aqui esta passando para o express (framework) a responsabilidade de gerenciar as rotas que estavámos fazendo na unha no server.js como um objeto js.
 
 export default app;
-

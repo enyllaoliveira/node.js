@@ -18,7 +18,7 @@ class LivroController {
   static async listLivroById(req, res) {
     try {
       const id = req.params.id;
-      const findBook = await livro.finsdById(id);
+      const findBook = await livro.findById(id);
       res.status(200).json(findBook);
     } catch (erro) {
       res.status(500).json({
@@ -52,6 +52,19 @@ class LivroController {
     } catch (erro) {
       res.status(500).json({
         message: `${erro.message} - Falha na atualização do livro`,
+        error: erro.message,
+      });
+    }
+  }
+
+  static async deleteLivroById(req, res) {
+    try {
+      const id = req.params.id;
+      await livro.findByIdAndDelete(id);
+      res.status(200).json({message: "Livro deletado com sucesso"});
+    } catch (erro) {
+      res.status(500).json({
+        message: `${erro.message} - Falha na exclusão do livro`,
         error: erro.message,
       });
     }
