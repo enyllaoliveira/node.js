@@ -5,6 +5,7 @@
   "description": "",
   "type": "module",
   "scripts": {
+    "start": "nodemon index.js",
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
