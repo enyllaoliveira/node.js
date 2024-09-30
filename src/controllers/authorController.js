@@ -1,20 +1,20 @@
 // centralizar toda a lógica que está relacionada com as ações que podem ser feitas em um autor
-
-import mongoose from 'mongoose';
 import { author } from '../models/Autor.js';
 
 class AuthorController {
-  static listAuthors = async (req, res) => {
+  static listAuthors = async (req, res, next) => {
     try {
       const listAuthors = await author.find();
 
       res.status(200).json(listAuthors);
     } catch (erro) {
-      res.status(500).json({ message: 'Erro interno no servidor' }, erro);
+      // res.status(500).json({ message: 'Erro interno no servidor' }, erro);
+      // antes estava assim em tudo, o código fica grande e não aproveitável. Assim, pega o next do próprio mongoose para fazer o controle de erros
+      next(erro);
     }
   };
 
-  static listAuthorById = async (req, res) => {
+  static listAuthorById = async (req, res, next) => {
     try {
       const id = req.params.id;
 
@@ -26,17 +26,11 @@ class AuthorController {
         res.status(404).send({ message: 'Id do Autor não localizado.' });
       }
     } catch (erro) {
-      if (erro instanceof mongoose.Error.CastError) {
-        res.status(400).send({ message: 'Id do Autor inválido.' });
-      } else {
-        res.status(500).send({
-          message: `Erro interno do servidor - ${erro.message}`,
-        });
-      }
+      next(erro);
     }
   };
 
-  static addAuthor = async (req, res) => {
+  static addAuthor = async (req, res, next) => {
     try {
       const newAuthor = await author.create(req.body);
       res.status(201).json({
@@ -44,35 +38,31 @@ class AuthorController {
         author: newAuthor,
       });
     } catch (erro) {
-      res.status(500).json({
-        message: `${erro.message} - Falha ao cadastrar o autor`,
-        error: erro.message,
-      });
+      next(erro);
     }
   };
-  static updateAuthorById = async (req, res) => {
+  static updateAuthorById = async (req, res, next) => {
     try {
       const id = req.params.id;
       await author.findByIdAndUpdate(id, req.body);
       res.status(200).json({ message: 'Autor atualizado' });
     } catch (erro) {
-      res.status(500).json({
-        message: `${erro.message} - Falha na atualização do autor`,
-        error: erro.message,
-      });
+      next(erro);
     }
   };
 
-  static deleteAuthorById = async (req, res) => {
+  static deleteAuthorById = async (req, res, next) => {
     try {
       const id = req.params.id;
       await author.findByIdAndDelete(id);
       res.status(200).json({ message: 'Autor deletado com sucesso' });
     } catch (erro) {
-      res.status(500).json({
-        message: `${erro.message} - Falha na exclusão do autor`,
-        error: erro.message,
-      });
+      // res.status(500).json({
+      //   message: `${erro.message} - Falha na exclusão do autor`,
+      //   error: erro.message,
+      // });
+      // antes estava assim em tudo, o código fica grande e não aproveitável. Assim, pega o next do próprio mongoose para fazer o controle de erros
+      next(erro);
     }
   };
 }
