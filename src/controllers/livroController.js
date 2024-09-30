@@ -83,6 +83,19 @@ class LivroController {
       });
     }
   }
+
+  static async listBooksBySeller(req, res) {
+    const seller = req.query.seller
+    try {
+      const booksBySeller = await livro.find({editora: seller})
+      res.status(200).json(booksBySeller);
+    } catch (erro){
+      res.status(500).json({
+        message: `${erro.message} - Falha na busca`,
+        error: erro.message,
+      });
+    }
+  }
 }
 
 // lembrar de adicionar cada uma dessas rotas em routes
