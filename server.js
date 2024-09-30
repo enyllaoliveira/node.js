@@ -1,14 +1,13 @@
 // import http from "http"; // começou aqui e depois foi criado o app.js e instalado embaixo
-import 'dotenv/config'
-import app from './src/app.js'
+import 'dotenv/config';
+import app from './src/app.js';
 
 const PORT = 3000;
 
 const rotas = {
-  "/": "Curso do Nodesss.js",
-  "/livros": "Entrei na rota livros",
-  "/autores": "Entrei na rota autores",
-
+  '/': 'Curso do Nodesss.js',
+  '/livros': 'Entrei na rota livros',
+  '/autores': 'Entrei na rota autores',
 };
 // const server = http.createServer((req, res) => {
 //   res.writeHead(200, { "Content-Type": "text/plain" });
@@ -21,4 +20,4 @@ const rotas = {
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-}); 
+});

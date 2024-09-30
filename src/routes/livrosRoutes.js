@@ -10,6 +10,4 @@ routes.post("/livros", LivroController.addBook);
 routes.put("/livros/:id", LivroController.updateLivroById);
 routes.delete("/livros/:id", LivroController.deleteLivroById);
 
-
-
 export default routes;
