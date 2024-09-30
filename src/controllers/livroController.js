@@ -31,16 +31,21 @@ class LivroController {
       next(erro);
     }
   };
-
   static addBook = async (req, res, next) => {
     const newBook = req.body;
 
     try {
+      if (!newBook.author) {
+        const error = new Error('O campo "author" é obrigatório');
+        error.statusCode = 400;
+        throw error;
+      }
+
       const authorFinded = await author.findById(newBook.author);
       if (!authorFinded) {
-        return res.status(404).json({
-          message: 'Autor não encontrado',
-        });
+        const error = new Error('Autor não encontrado');
+        error.statusCode = 404;
+        throw error;
       }
 
       const completBook = {

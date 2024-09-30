@@ -1,13 +1,16 @@
 import mongoose from 'mongoose';
+import ErroBase from '../errors/ErroBase.js';
+import WrongReq from '../errors/WrongReq.js';
+import WrongValitation from '../errors/WrongValidation.js';
 
 // eslint-disable-next-line no-unused-vars
 function manipuladorDeErros(erro, req, res, next) {
   if (erro instanceof mongoose.Error.CastError) {
-    res.status(400).send({ message: 'Id do Autor inválido.' });
+    new WrongReq().sendAnswer(res);
+  } else if (erro instanceof mongoose.Error.ValidationError) {
+    new WrongValitation(erro).sendAnswer(res);
   } else {
-    res.status(500).send({
-      message: 'Erro interno do servidor',
-    });
+    new ErroBase().sendAnswer(res);
   }
 }
 
