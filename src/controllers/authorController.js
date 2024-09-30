@@ -1,5 +1,6 @@
 // centralizar toda a lógica que está relacionada com as ações que podem ser feitas em um autor
 
+import mongoose from 'mongoose';
 import { author } from '../models/Autor.js';
 
 class AuthorController {
@@ -19,11 +20,19 @@ class AuthorController {
 
       const findAuthor = await author.findById(id);
 
-      res.status(200).send(findAuthor);
+      if (findAuthor !== null) {
+        res.status(200).send(findAuthor);
+      } else {
+        res.status(404).send({ message: 'Id do Autor não localizado.' });
+      }
     } catch (erro) {
-      res
-        .status(400)
-        .send({ message: `${erro.message} - Id do Autor não localizado.` });
+      if (erro instanceof mongoose.Error.CastError) {
+        res.status(400).send({ message: 'Id do Autor inválido.' });
+      } else {
+        res.status(500).send({
+          message: `Erro interno do servidor - ${erro.message}`,
+        });
+      }
     }
   };
 
