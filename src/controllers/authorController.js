@@ -45,24 +45,48 @@ class AuthorController {
   static updateAuthorById = async (req, res, next) => {
     try {
       const id = req.params.id;
-      await author.findByIdAndUpdate(id, req.body);
-      res.status(200).json({ message: 'Autor atualizado' });
+
+      const autorResultado = await author.findByIdAndUpdate(id, {
+        $set: req.body,
+      });
+
+      if (autorResultado !== null) {
+        res.status(200).send({ message: 'Autor atualizado com sucesso' });
+      } else {
+        next(new NotFound('Id do Autor não localizado.'));
+      }
     } catch (erro) {
       next(erro);
     }
   };
 
+  // static deleteAuthorById = async (req, res, next) => {
+  //   try {
+  //     const id = req.params.id;
+  //     await author.findByIdAndDelete(id);
+  //     res.status(200).json({ message: 'Autor deletado com sucesso' });
+  //   } catch (erro) {
+  //     // res.status(500).json({
+  //     //   message: `${erro.message} - Falha na exclusão do autor`,
+  //     //   error: erro.message,
+  //     // });
+  //     // antes estava assim em tudo, o código fica grande e não aproveitável. Assim, pega o next do próprio mongoose para fazer o controle de erros
+  //     next(erro);
+  //   }
+  // };
+
   static deleteAuthorById = async (req, res, next) => {
     try {
       const id = req.params.id;
-      await author.findByIdAndDelete(id);
-      res.status(200).json({ message: 'Autor deletado com sucesso' });
+
+      const autorResultado = await author.findByIdAndDelete(id);
+
+      if (autorResultado !== null) {
+        res.status(200).send({ message: 'Autor removido com sucesso' });
+      } else {
+        next(new NotFound('Id do Autor não localizado.'));
+      }
     } catch (erro) {
-      // res.status(500).json({
-      //   message: `${erro.message} - Falha na exclusão do autor`,
-      //   error: erro.message,
-      // });
-      // antes estava assim em tudo, o código fica grande e não aproveitável. Assim, pega o next do próprio mongoose para fazer o controle de erros
       next(erro);
     }
   };
