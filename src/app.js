@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 // import livro from '../src/models/Livro.js' - passou para o controller a responsabilidade
 import routes from '../index.js';
 import manipuladorDeErros from './middlewares/manipuladorDeErros.js';
+import manipulator404 from './middlewares/manipulador404.js';
 
 try {
   await connectDatabase();
@@ -24,6 +25,7 @@ try {
 const app = express();
 routes(app);
 
+app.use(manipulator404);
 // criação de um middleware, que é uma função especial do express que será executada em toda requisição feita para a API ou em certas requisições.
 // esse middleware é de erro e é caracterizada por receber 4 parâmetros, mesmo que não use as 4
 

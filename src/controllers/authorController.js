@@ -1,4 +1,5 @@
 // centralizar toda a lógica que está relacionada com as ações que podem ser feitas em um autor
+import NotFound from '../errors/NotFound.js';
 import { author } from '../models/Autor.js';
 
 class AuthorController {
@@ -23,7 +24,7 @@ class AuthorController {
       if (findAuthor !== null) {
         res.status(200).send(findAuthor);
       } else {
-        res.status(404).send({ message: 'Id do Autor não localizado.' });
+        next(new NotFound('Id do Autor não localizado.'));
       }
     } catch (erro) {
       next(erro);
