@@ -129,10 +129,15 @@ class LivroController {
     }
   };
 
-  static listBooksBySeller = async (req, res, next) => {
-    const seller = req.query.seller;
+  static listBooksByFilter = async (req, res, next) => {
+    const { editora, titulo } = req.query;
+
+    const search = {};
+    if (editora) search.editora = editora;
+    if (titulo) search.titulo = titulo;
+
     try {
-      const booksBySeller = await livro.find({ editora: seller });
+      const booksBySeller = await livro.find(search);
       res.status(200).json(booksBySeller);
     } catch (erro) {
       next(erro);
