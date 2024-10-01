@@ -1,6 +1,6 @@
 // centralizar toda a lógica que está relacionada com as ações que podem ser feitas em um livro
 
-import livro from '../models/Livro.js';
+import { livro } from '../models/index.js';
 import { author } from '../models/Autor.js';
 import NotFound from '../errors/NotFound.js';
 

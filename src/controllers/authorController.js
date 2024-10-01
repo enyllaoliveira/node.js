@@ -1,6 +1,6 @@
 // centralizar toda a lógica que está relacionada com as ações que podem ser feitas em um autor
 import NotFound from '../errors/NotFound.js';
-import { author } from '../models/Autor.js';
+import { author } from '../models/index.js';
 
 class AuthorController {
   static listAuthors = async (req, res, next) => {
