@@ -3,12 +3,26 @@
 import { livro } from '../models/index.js';
 import { author } from '../models/Autor.js';
 import NotFound from '../errors/NotFound.js';
+import WrongReq from '../errors/WrongReq.js';
 
 class LivroController {
   static listLivros = async (req, res, next) => {
     try {
-      const listBooks = await livro.find({});
-      res.status(200).json(listBooks);
+      let { limite = 2, paginas = 1 } = req.query;
+      (limite = parseInt(limite)), (paginas = parseInt(paginas));
+
+      if (limite > 0 && paginas > 0) {
+        const listBooks = await livro
+          .find({})
+          .limit(limite)
+          .skip((paginas - 1) * limite)
+          .populate('author')
+          .exec();
+
+        res.status(200).json(listBooks);
+      } else {
+        next(new WrongReq());
+      }
     } catch (erro) {
       // res.status(500).json({
       //   message: `${erro.message} - Falha ao listar os livros`,
@@ -130,14 +144,9 @@ class LivroController {
   };
 
   static listBooksByFilter = async (req, res, next) => {
-    const { editora, titulo } = req.query;
-
-    const search = {};
-    if (editora) search.editora = editora;
-    if (titulo) search.titulo = titulo;
-
     try {
-      const booksBySeller = await livro.find(search);
+      const search = await processSearch(req.query);
+      const booksBySeller = await livro.find(search).populate('author');
       res.status(200).json(booksBySeller);
     } catch (erro) {
       next(erro);
@@ -145,5 +154,30 @@ class LivroController {
   };
 }
 
-// lembrar de adicionar cada uma dessas rotas em routes
+async function processSearch(params) {
+  const { editora, titulo, minPages, maxPages, nameAuthor } = params;
+
+  const search = {};
+  if (editora) search.editora = editora;
+  if (titulo)
+    search.titulo = {
+      $regex: titulo,
+      $options: 'i',
+    };
+  if (minPages || maxPages) {
+    search.paginas = {};
+
+    if (minPages) {
+      search.paginas.$gte = minPages; // >= minPages
+    }
+
+    if (maxPages) {
+      search.paginas.$lte = maxPages; // <= maxPages
+    }
+  }
+  if (nameAuthor) {
+    search['author.nome'] = { $regex: new RegExp(nameAuthor.trim(), 'i') };
+  }
+  return search;
+}
 export default LivroController;
