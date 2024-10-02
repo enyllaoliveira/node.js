@@ -3,31 +3,15 @@
 import { livro } from '../models/index.js';
 import { author } from '../models/Autor.js';
 import NotFound from '../errors/NotFound.js';
-import WrongReq from '../errors/WrongReq.js';
 
 class LivroController {
   static listLivros = async (req, res, next) => {
     try {
-      let { limite = 15, paginas = 1, ordenacao = '_id:-1' } = req.query;
+      const searchBooks = livro.find();
 
-      let [campoOrdenacao, ordem] = ordenacao.split(':');
-      limite = parseInt(limite);
-      paginas = parseInt(paginas);
-      ordem = parseInt(ordem);
+      req.result = searchBooks;
 
-      if (limite > 0 && paginas > 0) {
-        const listBooks = await livro
-          .find()
-          .sort({ [campoOrdenacao]: ordem })
-          .limit(limite)
-          .skip((paginas - 1) * limite)
-          .populate('author')
-          .exec();
-
-        res.status(200).json(listBooks);
-      } else {
-        next(new WrongReq());
-      }
+      next();
     } catch (erro) {
       // res.status(500).json({
       //   message: `${erro.message} - Falha ao listar os livros`,
@@ -151,7 +135,7 @@ class LivroController {
   static listBooksByFilter = async (req, res, next) => {
     try {
       const search = await processSearch(req.query);
-      const booksBySeller = await livro.find(search).populate('author');
+      const booksBySeller = livro.find(search).populate('author');
       res.status(200).json(booksBySeller);
     } catch (erro) {
       next(erro);
@@ -181,7 +165,10 @@ async function processSearch(params) {
     }
   }
   if (nameAuthor) {
-    search['author.nome'] = { $regex: new RegExp(nameAuthor.trim(), 'i') };
+    const authorIds = await author
+      .find({ nome: { $regex: new RegExp(nameAuthor.trim(), 'i') } })
+      .select('_id');
+    search.author = { $in: authorIds };
   }
   return search;
 }
