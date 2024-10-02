@@ -8,12 +8,17 @@ import WrongReq from '../errors/WrongReq.js';
 class LivroController {
   static listLivros = async (req, res, next) => {
     try {
-      let { limite = 2, paginas = 1 } = req.query;
-      (limite = parseInt(limite)), (paginas = parseInt(paginas));
+      let { limite = 15, paginas = 1, ordenacao = '_id:-1' } = req.query;
+
+      let [campoOrdenacao, ordem] = ordenacao.split(':');
+      limite = parseInt(limite);
+      paginas = parseInt(paginas);
+      ordem = parseInt(ordem);
 
       if (limite > 0 && paginas > 0) {
         const listBooks = await livro
-          .find({})
+          .find()
+          .sort({ [campoOrdenacao]: ordem })
           .limit(limite)
           .skip((paginas - 1) * limite)
           .populate('author')
